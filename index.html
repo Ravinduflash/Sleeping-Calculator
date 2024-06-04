@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Cycle Sleep Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+        }
+        label, input, button {
+            font-size: 1.2em;
+            margin: 10px;
+        }
+        input, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #results {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+    <script>
+        function calculateTimes() {
+            const sleepTime = document.getElementById('sleepTime').value;
+            const wakeUpTime = document.getElementById('wakeUpTime').value;
+            const fallAsleepMinutes = parseInt(document.getElementById('fallAsleepTime').value) || 15;
+
+            const cycles = [90, 180, 270, 360, 450, 540, 630]; // 90-minute intervals
+            const results = [];
+            const fallAsleepTime = fallAsleepMinutes * 60000; // Convert minutes to milliseconds
+
+            if (sleepTime) {
+                const sleepDate = new Date('1970-01-01T' + sleepTime + 'Z').getTime() + fallAsleepTime;
+                cycles.forEach(minutes => {
+                    const wakeDate = new Date(sleepDate + minutes * 60000);
+                    results.push('Wake up at: ' + wakeDate.toISOString().substr(11, 5));
+                });
+            } else if (wakeUpTime) {
+                const wakeDate = new Date('1970-01-01T' + wakeUpTime + 'Z').getTime();
+                cycles.forEach(minutes => {
+                    const sleepDate = new Date(wakeDate - minutes * 60000 - fallAsleepTime);
+                    results.push('Sleep at: ' + sleepDate.toISOString().substr(11, 5));
+                });
+            }
+
+            document.getElementById('results').innerHTML = results.join('<br>');
+        }
+
+        function resetFields() {
+            document.getElementById('sleepTime').value = '';
+            document.getElementById('wakeUpTime').value = '';
+            document.getElementById('fallAsleepTime').value = '15';
+            document.getElementById('results').innerHTML = '';
+        }
+    </script>
+</head>
+<body>
+    <h1>Alpha Cycle Sleep Calculator</h1>
+    <label for="sleepTime">Sleep Time (HH:MM):</label>
+    <input type="time" id="sleepTime" name="sleepTime">
+    <br>
+    <label for="wakeUpTime">Wake Up Time (HH:MM):</label>
+    <input type="time" id="wakeUpTime" name="wakeUpTime">
+    <br>
+    <label for="fallAsleepTime">Time to Fall Asleep (minutes):</label>
+    <input type="number" id="fallAsleepTime" name="fallAsleepTime" value="15">
+    <br>
+    <button onclick="calculateTimes()">Calculate</button>
+    <button onclick="resetFields()">Reset</button>
+    <h2>Results:</h2>
+    <div id="results"></div>
+</body>
+</html>
